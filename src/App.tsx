@@ -4,7 +4,6 @@ import Button from "@mui/material/Button";
 import { UserList } from './UserList'
 import { useWebSocket } from './useWebSocket'
 
-// const serverUrl = 'wss://nooks-takehome-backend-production.up.railway.app'
 const serverUrl = process.env.REACT_APP_SERVER_URL || 'ws://localhost:8080'
 
 // randomly generate a user ID every time you join the room
