@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import Button from "@mui/material/Button";
 import { UserList } from './UserList'
+import { useWebSocket } from './useWebSocket'
 
 // const serverUrl = 'wss://nooks-takehome-backend-production.up.railway.app'
 const serverUrl = process.env.REACT_APP_SERVER_URL || 'ws://localhost:8080'
@@ -11,36 +12,17 @@ const serverUrl = process.env.REACT_APP_SERVER_URL || 'ws://localhost:8080'
 // so a random ID will do to distinguish between two tabs with the Youtube Watch Party Open
 const userId = uuidv4();
 
+const sampleVideos = [
+  'https://www.youtube.com/watch?v=kpk2tdsPh0A',
+  'https://www.youtube.com/watch?v=6EKreQ5HD4w',
+  'https://www.youtube.com/watch?v=qWXnt2Z2D1E',
+  'https://www.youtube.com/watch?v=0f0OvgfWrFQ',
+]
+
 function App() {
-  const [users, setUsers] = useState<string[]>([])
+  const users = useWebSocket(serverUrl, userId)
 
-  useEffect(() => {
-    const socket = new WebSocket(serverUrl)
-
-    socket.addEventListener('open', () => {
-      console.log('socket opened')
-      socket.send(JSON.stringify({
-        action: 'join',
-        userId,
-      }))
-    })
-
-    socket.addEventListener('message', (message) => {
-      const messageData = JSON.parse(message.data)
-
-      console.log('server message', messageData)
-
-      if (messageData.action === 'join') {
-        setUsers(users => [...users, messageData.userId])
-      } else if (messageData.action === 'leave') {
-        setUsers(users => users.filter(_ => _ !== messageData.userId))
-      } else if (messageData.action === 'userList') {
-        setUsers(messageData.users)
-      } else {
-        console.log('unknown message', messageData)
-      }
-    })
-  }, [])
+  const [videoUrl, setVideoUrl] = useState('')
 
   return (
     <div className="App">
