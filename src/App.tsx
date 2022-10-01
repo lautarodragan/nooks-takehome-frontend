@@ -4,7 +4,7 @@ import Button from "@mui/material/Button";
 import { UserList } from './UserList'
 
 // const serverUrl = 'wss://nooks-takehome-backend-production.up.railway.app'
-const serverUrl = 'ws://localhost:8080'
+const serverUrl = process.env.REACT_APP_SERVER_URL || 'ws://localhost:8080'
 
 // randomly generate a user ID every time you join the room
 // you don't need persistence between browser reloads or different sessions,
@@ -31,16 +31,16 @@ function App() {
       console.log('server message', messageData)
 
       if (messageData.action === 'join') {
-        setUsers([...users, messageData.userId])
+        setUsers(users => [...users, messageData.userId])
       } else if (messageData.action === 'leave') {
-        setUsers(users.filter(_ => _ !== messageData.userId))
+        setUsers(users => users.filter(_ => _ !== messageData.userId))
       } else if (messageData.action === 'userList') {
         setUsers(messageData.users)
       } else {
         console.log('unknown message', messageData)
       }
     })
-  }, []) // TODO: needs to depend on users
+  }, [])
 
   return (
     <div className="App">
