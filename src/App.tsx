@@ -28,15 +28,19 @@ function App() {
     socket.addEventListener('message', (message) => {
       const messageData = JSON.parse(message.data)
 
+      console.log('server message', messageData)
+
       if (messageData.action === 'join') {
         setUsers([...users, messageData.userId])
+      } else if (messageData.action === 'leave') {
+        setUsers(users.filter(_ => _ !== messageData.userId))
+      } else if (messageData.action === 'userList') {
+        setUsers(messageData.users)
       } else {
         console.log('unknown message', messageData)
       }
     })
-
-
-  }, [])
+  }, []) // TODO: needs to depend on users
 
   return (
     <div className="App">
