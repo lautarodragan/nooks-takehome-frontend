@@ -1,6 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { v4 as uuidv4 } from "uuid";
 import Button from "@mui/material/Button";
+import React, { useEffect, useState } from "react";
+import YouTube from 'react-youtube'
+import { v4 as uuidv4 } from "uuid";
+
 import { UserList } from './UserList'
 import { useWebSocket } from './useWebSocket'
 import { YouTubeURLInput } from './YouTubeURLInput'
@@ -31,6 +33,19 @@ function App() {
         </p>
         <Button> Add a youtube video</Button>
         <YouTubeURLInput onSubmit={onUrlSubmit} />
+
+        <YouTube
+          videoId={videoId}
+          // onReady={func}                    // defaults -> noop
+          // onPlay={func}                     // defaults -> noop
+          // onPause={func}                    // defaults -> noop
+          // onEnd={func}                      // defaults -> noop
+          // onError={func}                    // defaults -> noop
+          // onStateChange={func}              // defaults -> noop
+          // onPlaybackRateChange={func}       // defaults -> noop
+        />
+
+
         <UserList users={users} />
       </header>
     </div>
