@@ -1,11 +1,11 @@
 import Button from "@mui/material/Button";
-import React, { useEffect, useState } from "react";
-import YouTube from 'react-youtube'
+import React, { useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 
 import { UserList } from './UserList'
 import { useWebSocket } from './useWebSocket'
 import { YouTubeURLInput } from './YouTubeURLInput'
+import { VideoPlayer, VideoPlayerRef } from './VideoPlayer'
 
 const serverUrl = process.env.REACT_APP_SERVER_URL || 'ws://localhost:8080'
 
@@ -15,13 +15,42 @@ const serverUrl = process.env.REACT_APP_SERVER_URL || 'ws://localhost:8080'
 const userId = uuidv4();
 
 function App() {
-  const users = useWebSocket(serverUrl, userId)
-
   const [videoId, setVideoId] = useState('')
+  const videoRef = useRef<VideoPlayerRef>()
+
+  const onMessageLoad = (videoId: string) => {
+    setVideoId(videoId)
+  }
+
+  const onMessagePlay = () => {
+    videoRef.current?.play()
+  }
+
+  const onMessagePause = () => {
+    videoRef.current?.pause()
+  }
+
+  const { users, send } = useWebSocket(serverUrl, userId, onMessageLoad, onMessagePlay, onMessagePause)
+
 
   const onUrlSubmit = (videoId: string) => {
-    console.log('submitted videoId', videoId)
     setVideoId(videoId)
+    send({
+      action: 'load',
+      videoId,
+    })
+  }
+
+  const onPlay = () => {
+    send({
+      action: 'play',
+    })
+  }
+
+  const onPause = () => {
+    send({
+      action: 'pause',
+    })
   }
 
   return (
@@ -34,17 +63,7 @@ function App() {
         <Button> Add a youtube video</Button>
         <YouTubeURLInput onSubmit={onUrlSubmit} />
 
-        <YouTube
-          videoId={videoId}
-          // onReady={func}                    // defaults -> noop
-          // onPlay={func}                     // defaults -> noop
-          // onPause={func}                    // defaults -> noop
-          // onEnd={func}                      // defaults -> noop
-          // onError={func}                    // defaults -> noop
-          // onStateChange={func}              // defaults -> noop
-          // onPlaybackRateChange={func}       // defaults -> noop
-        />
-
+        { videoId && <VideoPlayer videoId={videoId} onPlay={onPlay} onPause={onPause} ref={videoRef} /> }
 
         <UserList users={users} />
       </header>
