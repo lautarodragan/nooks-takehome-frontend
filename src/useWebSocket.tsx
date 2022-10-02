@@ -20,8 +20,10 @@ export const useWebSocket = (
         userId,
       }))
     })
+  }, [])
 
-    socket.addEventListener('message', (message) => {
+  useEffect(() => {
+    const eventListener = (message: MessageEvent) => {
       const messageData = JSON.parse(message.data)
 
       console.log('server message', messageData)
@@ -39,10 +41,14 @@ export const useWebSocket = (
       } else if (messageData.action === 'pause') {
         onPause()
       } else {
-        console.log('unknown message', messageData)
+        console.warn('Received unknown message', messageData)
       }
-    })
-  }, []) // todo: if passed onLoad etc callbacks change, this will break
+    }
+
+    socketRef.current?.addEventListener('message', eventListener)
+
+    return () => socketRef.current?.removeEventListener('message', eventListener)
+  }, [onLoad, onPlay, onPause])
 
   const send = (what: any) => {
     socketRef.current?.send(JSON.stringify(what))
