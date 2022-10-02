@@ -77,7 +77,7 @@ export const VideoPlayer = forwardRef((
         onError={onVideoError}
         onStateChange={onVideoStateChange}
         onPlaybackRateChange={onVideoPlaybackRateChange}
-        opts={{ controls: 0 }}
+        opts={{ playerVars: { controls: 0 } }}
       />
 
       <button onClick={onPlayClick}>Play</button>
