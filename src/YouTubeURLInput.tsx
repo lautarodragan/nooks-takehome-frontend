@@ -26,6 +26,10 @@ export const YouTubeURLInput = ({ onSubmit }: YouTubeURLInputProps) => {
     }
   }
 
+  const onRandom = () => {
+    setUrl(sampleVideos[Math.floor(Math.random() * sampleVideos.length)])
+  }
+
   return (
     <div>
       <input
@@ -35,6 +39,7 @@ export const YouTubeURLInput = ({ onSubmit }: YouTubeURLInputProps) => {
         onChange={event => setUrl(event.currentTarget.value)}
       />
       <button onClick={onSubmitInternal} >Play</button>
+      <button onClick={onRandom}>Random</button>
     </div>
   )
 }
