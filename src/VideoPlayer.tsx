@@ -10,7 +10,8 @@ interface VideoPlayerProps {
 export interface VideoPlayerRef {
   readonly play: () => void
   readonly pause: () => void
-  readonly state: () => any
+  readonly getCurrentTime: () => number
+  readonly seekTo: (seconds: number) => void
 }
 
 export const VideoPlayer = forwardRef((
@@ -18,28 +19,36 @@ export const VideoPlayer = forwardRef((
   ref,
 ) => {
   const playerRef = useRef<YouTubePlayer>()
-  const shouldPlayAsapRef = useRef(false)
+  const playAsapRef = useRef(false)
+  const seekToAsapRef = useRef(0)
 
   const play = () => playerRef.current?.playVideo()
-
-  const imperativeHandlePlay = () => {
-    console.log('imperativeHandlePlay')
-    play()
-    shouldPlayAsapRef.current = true
-  }
+  const seekTo = (seconds: number) => playerRef.current?.seekTo(seconds, true)
 
   useImperativeHandle(ref, () => ({
-    play: imperativeHandlePlay,
+    play: () => {
+      console.log('imperativeHandle play')
+      play()
+      playAsapRef.current = true
+    },
     pause: () => playerRef.current?.pauseVideo(),
-    state: () => playerRef.current?.getPlayerState(),
+    getCurrentTime: () => playerRef.current?.getCurrentTime(),
+    seekTo: (seconds: number) => {
+      console.log('imperativeHandle seekTo', seconds)
+      seekTo(seconds)
+      seekToAsapRef.current = seconds
+    },
   }))
 
   const onVideoReady = (event: YouTubeEvent) => {
     console.log('onVideoReady', event, event.target.getPlayerState())
     playerRef.current = event.target
 
-    if (shouldPlayAsapRef.current)
+    if (playAsapRef.current)
       play()
+
+    if (seekToAsapRef.current)
+      seekTo(seekToAsapRef.current)
   }
 
   const onVideoPlay = (event: YouTubeEvent) => {

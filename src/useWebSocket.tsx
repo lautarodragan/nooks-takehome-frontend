@@ -3,8 +3,8 @@ import { useEffect, useRef, useState } from 'react'
 export const useWebSocket = (
   serverUrl: string,
   userId: string,
-  onLoad: (video: string) => void,
-  onPlay: () => void,
+  onLoad: (video: string, playTime: number) => void,
+  onPlay: (currentPlayTime: number) => void,
   onPause: () => void,
 ) => {
   const [users, setUsers] = useState<string[]>([])
@@ -34,14 +34,14 @@ export const useWebSocket = (
         setUsers(users => users.filter(_ => _ !== messageData.userId))
       } else if (messageData.action === 'partyState') {
         setUsers(messageData.users)
-        onLoad(messageData.videoId)
+        onLoad(messageData.videoId, messageData.currentPlayTime)
         if (messageData.videoPlaybackStatus === 'playing') {
-          onPlay()
+          onPlay(messageData.currentPlayTime)
         }
       } else if (messageData.action === 'load') {
-        onLoad(messageData.videoId)
+        onLoad(messageData.videoId, 0)
       } else if (messageData.action === 'play') {
-        onPlay()
+        onPlay(messageData.currentPlayTime)
       } else if (messageData.action === 'pause') {
         onPause()
       } else {

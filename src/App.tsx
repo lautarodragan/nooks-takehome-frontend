@@ -35,12 +35,14 @@ export const Party = () => {
   const [videoId, setVideoId] = useState('')
   const videoRef = useRef<VideoPlayerRef>()
 
-  const onMessageLoad = (videoId: string) => {
+  const onMessageLoad = (videoId: string, playTime: number) => {
     setVideoId(videoId)
+    videoRef.current?.seekTo(playTime)
   }
 
-  const onMessagePlay = () => {
-    console.log('onMessagePlay')
+  const onMessagePlay = (playTime: number) => {
+    console.log('onMessagePlay', playTime)
+    videoRef.current?.seekTo(playTime)
     videoRef.current?.play()
   }
 
@@ -61,12 +63,14 @@ export const Party = () => {
   const onPlay = () => {
     send({
       action: 'play',
+      currentPlayTime: videoRef.current?.getCurrentTime(),
     })
   }
 
   const onPause = () => {
     send({
       action: 'pause',
+      currentPlayTime: videoRef.current?.getCurrentTime(),
     })
   }
 
