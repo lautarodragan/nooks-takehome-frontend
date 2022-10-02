@@ -32,8 +32,12 @@ export const useWebSocket = (
         setUsers(users => [...users, messageData.userId])
       } else if (messageData.action === 'leave') {
         setUsers(users => users.filter(_ => _ !== messageData.userId))
-      } else if (messageData.action === 'userList') {
+      } else if (messageData.action === 'partyState') {
         setUsers(messageData.users)
+        onLoad(messageData.videoId)
+        if (messageData.videoPlaybackStatus === 'playing') {
+          onPlay()
+        }
       } else if (messageData.action === 'load') {
         onLoad(messageData.videoId)
       } else if (messageData.action === 'play') {
