@@ -20,7 +20,7 @@ export const useWebSocket = (
         userId,
       }))
     })
-  }, [])
+  }, [serverUrl, userId])
 
   useEffect(() => {
     const eventListener = (message: MessageEvent) => {
