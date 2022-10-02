@@ -15,6 +15,23 @@ const serverUrl = process.env.REACT_APP_SERVER_URL || 'ws://localhost:8080'
 const userId = uuidv4();
 
 function App() {
+  const [joined, setJoined] = useState(false)
+
+  return (
+    <div className="App">
+      <header className="App-header">
+        <p>
+          Welcome to the Youtube Watch Party. Your ID for this session is {userId}.
+        </p>
+
+        { !joined && <Button onClick={() => setJoined(true)}>join the party!</Button>}
+        { joined && <Party/> }
+      </header>
+    </div>
+  );
+}
+
+export const Party = () => {
   const [videoId, setVideoId] = useState('')
   const videoRef = useRef<VideoPlayerRef>()
 
@@ -23,6 +40,7 @@ function App() {
   }
 
   const onMessagePlay = () => {
+    console.log('onMessagePlay')
     videoRef.current?.play()
   }
 
@@ -31,7 +49,6 @@ function App() {
   }
 
   const { users, send } = useWebSocket(serverUrl, userId, onMessageLoad, onMessagePlay, onMessagePause)
-
 
   const onUrlSubmit = (videoId: string) => {
     setVideoId(videoId)
@@ -54,21 +71,16 @@ function App() {
   }
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <p>
-          Welcome to the Youtube Watch Party. Your ID for this session is{" "}
-          {userId}.
-        </p>
-        <Button> Add a youtube video</Button>
-        <YouTubeURLInput onSubmit={onUrlSubmit} />
+    <div>
+      <Button> Add a youtube video</Button>
+      <YouTubeURLInput onSubmit={onUrlSubmit} />
 
-        { videoId && <VideoPlayer videoId={videoId} onPlay={onPlay} onPause={onPause} ref={videoRef} /> }
+      { videoId && <VideoPlayer videoId={videoId} onPlay={onPlay} onPause={onPause} ref={videoRef} /> }
 
-        <UserList users={users} />
-      </header>
+      <UserList users={users} />
     </div>
-  );
+  )
 }
+
 
 export default App;

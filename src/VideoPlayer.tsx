@@ -10,6 +10,7 @@ interface VideoPlayerProps {
 export interface VideoPlayerRef {
   readonly play: () => void
   readonly pause: () => void
+  readonly state: () => any
 }
 
 export const VideoPlayer = forwardRef((
@@ -17,15 +18,28 @@ export const VideoPlayer = forwardRef((
   ref,
 ) => {
   const playerRef = useRef<YouTubePlayer>()
+  const shouldPlayAsapRef = useRef(false)
+
+  const play = () => playerRef.current?.playVideo()
+
+  const imperativeHandlePlay = () => {
+    console.log('imperativeHandlePlay')
+    play()
+    shouldPlayAsapRef.current = true
+  }
 
   useImperativeHandle(ref, () => ({
-    play: () => playerRef.current?.playVideo(),
+    play: imperativeHandlePlay,
     pause: () => playerRef.current?.pauseVideo(),
+    state: () => playerRef.current?.getPlayerState(),
   }))
 
   const onVideoReady = (event: YouTubeEvent) => {
-    console.log('onVideoReady', event)
+    console.log('onVideoReady', event, event.target.getPlayerState())
     playerRef.current = event.target
+
+    if (shouldPlayAsapRef.current)
+      play()
   }
 
   const onVideoPlay = (event: YouTubeEvent) => {
@@ -77,7 +91,7 @@ export const VideoPlayer = forwardRef((
         onError={onVideoError}
         onStateChange={onVideoStateChange}
         onPlaybackRateChange={onVideoPlaybackRateChange}
-        opts={{ playerVars: { controls: 0, autoplay: 1 } }}
+        opts={{ playerVars: { controls: 0, autoplay: 0 } }}
       />
 
       <button onClick={onPlayClick}>Play</button>
